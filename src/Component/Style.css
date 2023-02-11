@@ -37,11 +37,11 @@ body{
     word-wrap: break-word;
     word-break: break-all;
 } 
-.preopr{
+.pre-opr{
     color: rgba(255, 255, 255, .75);
     font-size: 1.5rem;
 }
-.curopr{
+.cur-opr{
     color: white;
     font-size: 2.5rem;
 }
