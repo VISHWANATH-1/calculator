@@ -55,6 +55,23 @@ function reducer(state, {type , payload}){
         }
       case ACTIONS.CLEAR:  
        return{}
+       case ACTIONS.DELETE_DIGIT:
+        if(state.overwrite){
+          return{
+            ...state,
+            overwrite: false,
+            curOpr:null,
+          }
+        }
+        if (state.curOpr== null) return state
+        if (state.curOpr.length === 1){
+          return{
+            ...state,curOpr:null
+          }
+          return{
+            ...state,curOpr: state.curOpr.slice(0, 1)
+          }
+        }
        case ACTIONS.EVALUATE:
         if (state.operation ==null || state.curOpr == null || state.preOpr == null){
           return state
@@ -87,6 +104,16 @@ function evaluate ({curOpr,preOpr, operation}){
   return computation.toString()
 }
 
+const INTEGER_FORMATTER =new Intl.NumberFormat("en-us",{
+  maximumFractionDigits: 0, 
+})
+function formatOperand(operand){
+  if (operand == null) return
+  const[integer, decimal]= operand.split('.')
+  if (decimal == null) return INTEGER_FORMATTER.format(integer)
+  return`${INTEGER_FORMATTER.format(integer)}.${decimal}`
+}
+
 const Calci = () => {
   const[{curOpr, preOpr, operation},dispatch]=useReducer(reducer, {})
 
@@ -94,13 +121,13 @@ const Calci = () => {
   return (
     <div className='calculator-gr'>
         <div className="outpt">
-        <div className="pre-opr">{curOpr}{operation}</div>
-        <div className="cur-opr">{preOpr}</div>
+        <div className="pre-opr">{formatOperand(preOpr)}{operation}</div>
+        <div className="cur-opr">{formatOperand(curOpr)}</div>
         </div>
         <button className="span-two" 
         onClick={()=>dispatch({type:ACTIONS.CLEAR})}>AC
         </button>
-        <button>DEL</button>
+        <button onClick={()=> dispatch({type:ACTIONS.DELETE_DIGIT})}>DEL</button>
         <OperationButton operation="/" dispatch={dispatch} />
         <DigitButton digit="1" dispatch={dispatch} />
         <DigitButton digit="2" dispatch={dispatch} />
